@@ -84,10 +84,6 @@ impl Lexer {
         self.input.get(self.position).cloned()
     }
 
-    fn peek_char(&self) -> Option<char> {
-        self.input.get(self.position + 1).cloned()
-    }
-
     fn advance(&mut self) {
         self.position += 1;
     }

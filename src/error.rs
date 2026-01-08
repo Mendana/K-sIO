@@ -22,3 +22,29 @@ impl fmt::Display for LexError {
 }
 
 impl Error for LexError {}
+
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum ParseError {
+    UnexpectedToken(String),
+    UnexpectedEOF,
+    InvalidExpression(String),
+}
+
+impl fmt::Display for ParseError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            ParseError::UnexpectedToken(tok) => {
+                write!(f, "Unexpected token encountered: '{}'", tok)
+            },
+            ParseError::UnexpectedEOF => {
+                write!(f, "Unexpected end of input")
+            },
+            ParseError::InvalidExpression(expr) => {
+                write!(f, "Invalid expression: '{}'", expr)
+            },
+        }
+    }
+}
+
+impl Error for ParseError {}

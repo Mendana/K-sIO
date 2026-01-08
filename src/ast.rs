@@ -17,6 +17,10 @@ pub enum Expr {
         args: Vec<Expr>,
     },
     Variable(String),
+    PostfixOp {
+        expr: Box<Expr>,
+        op: UnOp,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -45,4 +49,20 @@ pub enum Function {
     Exp,
     Sqrt,
     Abs,
+}
+
+impl Function {
+    pub fn from_str(s: &str) -> Option<Self> {
+        match s.to_lowercase().as_str() {
+            "sin" => Some(Function::Sin),
+            "cos" => Some(Function::Cos),
+            "tan" => Some(Function::Tan),
+            "log" => Some(Function::Log),
+            "ln" => Some(Function::Ln),
+            "exp" => Some(Function::Exp),
+            "sqrt" => Some(Function::Sqrt),
+            "abs" => Some(Function::Abs),
+            _ => None,
+        }
+    }
 }
