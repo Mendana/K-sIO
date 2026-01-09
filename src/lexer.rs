@@ -31,6 +31,22 @@ impl Lexer {
         }
     }
 
+    pub fn tokenize(&mut self) -> Result<Vec<Token>, LexError> {
+        let mut tokens = Vec::new();
+
+        loop {
+            let token = self.next_token()?;
+            if token == Token::EOF {
+                tokens.push(token);
+                break;
+            } else {
+                tokens.push(token);
+            }
+        }
+
+        Ok(tokens)
+    }
+    
     pub fn next_token(&mut self) -> Result<Token, LexError> {
         self.skip_whitespace();
 

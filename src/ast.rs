@@ -44,11 +44,17 @@ pub enum Function {
     Sin,
     Cos,
     Tan,
+    Asin,
+    Acos,
+    Atan,
     Log,
     Ln,
     Exp,
     Sqrt,
     Abs,
+    Floor,
+    Ceil,
+    Round,
 }
 
 impl Function {
@@ -57,11 +63,17 @@ impl Function {
             "sin" => Some(Function::Sin),
             "cos" => Some(Function::Cos),
             "tan" => Some(Function::Tan),
+            "asin" => Some(Function::Asin),
+            "acos" => Some(Function::Acos),
+            "atan" => Some(Function::Atan),
             "log" => Some(Function::Log),
             "ln" => Some(Function::Ln),
             "exp" => Some(Function::Exp),
             "sqrt" => Some(Function::Sqrt),
             "abs" => Some(Function::Abs),
+            "floor" => Some(Function::Floor),
+            "ceil" => Some(Function::Ceil),
+            "round" => Some(Function::Round),
             _ => None,
         }
     }

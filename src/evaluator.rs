@@ -13,6 +13,12 @@ impl Evaluator {
         }
     }
 
+    pub fn evaluate(&mut self, expr: &Expr) -> Result<f64, EvalError> {
+        let result = self.eval(expr)?;
+        self.context.set_ans(result);
+        Ok(result)
+    }
+
     pub fn eval(&mut self, expr: &Expr) -> Result<f64, EvalError> {
         match expr {
             Expr::Number(n) => Ok(*n),
@@ -85,6 +91,18 @@ impl Evaluator {
                 Self::validate_args(args, 1, "tan")?;
                 Ok(args[0].to_radians().tan())
             },
+            Function::Asin => {
+                Self::validate_args(args, 1, "asin")?;
+                Ok(args[0].asin().to_degrees())
+            },
+            Function::Acos => {
+                Self::validate_args(args, 1, "acos")?;
+                Ok(args[0].acos().to_degrees())
+            },
+            Function::Atan => {
+                Self::validate_args(args, 1, "atan")?;
+                Ok(args[0].atan().to_degrees())
+            },
             Function::Ln => {
                 Self::validate_args(args, 1, "ln")?;
                 Ok(args[0].ln())
@@ -109,6 +127,18 @@ impl Evaluator {
             Function::Exp => {
                 Self::validate_args(args, 1, "exp")?;
                 Ok(args[0].exp())
+            },
+            Function::Ceil => {
+                Self::validate_args(args, 1, "ceil")?;
+                Ok(args[0].ceil())
+            },
+            Function::Floor => {
+                Self::validate_args(args, 1, "floor")?;
+                Ok(args[0].floor())
+            },
+            Function::Round => {
+                Self::validate_args(args, 1, "round")?;
+                Ok(args[0].round())
             },
         }
     }

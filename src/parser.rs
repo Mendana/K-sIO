@@ -108,7 +108,7 @@ impl Parser {
         let mut left = self.parse_unary()?;
         while matches!(self.current_token(), Token::Caret) {
             self.advance();
-            let right = self.parse_unary()?;
+            let right = self.parse_power()?;
             left = Expr::BinaryOp {
                 left: Box::new(left),
                 op: BinOp::Power,
@@ -229,7 +229,6 @@ mod tests {
     #[test]
     fn test_simple_addition() {
         let expr = parse_expr("2 + 3").unwrap();
-        // Verificar estructura del AST
         matches!(expr, Expr::BinaryOp { .. });
     }
 
