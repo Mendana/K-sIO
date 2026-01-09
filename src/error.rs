@@ -48,3 +48,33 @@ impl fmt::Display for ParseError {
 }
 
 impl Error for ParseError {}
+
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum EvalError {
+    UndefinedVariable(String),
+    DivisionByZero,
+    InvalidArguments(String),
+    MathError(String)
+}
+
+impl fmt::Display for EvalError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            EvalError::UndefinedVariable(var) => {
+                write!(f, "Undefined variable encountered: '{}'", var)
+            },
+            EvalError::DivisionByZero => {
+                write!(f, "Division by zero error")
+            },
+            EvalError::InvalidArguments(func) => {
+                write!(f, "Invalid arguments provided to function: '{}'", func)
+            },
+            EvalError::MathError(msg) => {
+                write!(f, "Mathematical error: '{}'", msg)
+            },
+        }
+    }
+}
+
+impl Error for EvalError {}
