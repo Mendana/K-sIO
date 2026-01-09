@@ -55,6 +55,10 @@ pub enum Function {
     Floor,
     Ceil,
     Round,
+    //Functions with multiple arguments can be added here
+    Pow,
+    Max,
+    Min,
 }
 
 impl Function {
@@ -74,6 +78,9 @@ impl Function {
             "floor" => Some(Function::Floor),
             "ceil" => Some(Function::Ceil),
             "round" => Some(Function::Round),
+            "pow" => Some(Function::Pow),
+            "max" => Some(Function::Max),
+            "min" => Some(Function::Min),
             _ => None,
         }
     }

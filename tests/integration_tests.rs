@@ -127,3 +127,40 @@ fn test_negative_sqrt() {
 fn test_negative_factorial() {
     assert!(eval_expr("(-5)!").is_err());
 }
+
+#[test]
+fn test_invalid_syntax() {
+    assert!(eval_expr("2 + * 3").is_err());
+    assert!(eval_expr("5 /").is_err());
+}
+
+#[test]
+fn test_empty_input() {
+    assert!(eval_expr("").is_err());
+}
+
+#[test]
+fn test_pow_invalid_args() {
+    assert!(eval_expr("pow(2)").is_err());
+    assert!(eval_expr("pow(2, 3, 4)").is_err());
+}
+
+#[test]
+fn test_pow() {
+    assert_eq!(eval_expr("pow(2, 3)").unwrap(), 8.0);
+    assert_eq!(eval_expr("pow(5, 0)").unwrap(), 1.0);
+}
+
+#[test]
+fn test_max_min_invalid_args() {
+    assert!(eval_expr("max()").is_err());
+    assert!(eval_expr("min()").is_err());
+}
+
+#[test]
+fn test_max_min() {
+    assert_eq!(eval_expr("max(1)").unwrap(), 1.0);
+    assert_eq!(eval_expr("max(1, 3, 2)").unwrap(), 3.0);
+    assert_eq!(eval_expr("min(1)").unwrap(), 1.0);
+    assert_eq!(eval_expr("min(3, 1, 2)").unwrap(), 1.0);
+}

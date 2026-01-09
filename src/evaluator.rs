@@ -140,6 +140,22 @@ impl Evaluator {
                 Self::validate_args(args, 1, "round")?;
                 Ok(args[0].round())
             },
+            Function::Pow => {
+                Self::validate_args(args, 2, "pow")?;
+                Ok(args[0].powf(args[1]))
+            },
+            Function::Max => {
+                if args.is_empty() {
+                    return Err(EvalError::InvalidArguments("max expects at least 1 argument".to_string()));
+                }
+                Ok(args.iter().cloned().fold(f64::NEG_INFINITY, f64::max))
+            },
+            Function::Min => {
+                if args.is_empty() {
+                    return Err(EvalError::InvalidArguments("min expects at least 1 argument".to_string()));
+                }
+                Ok(args.iter().cloned().fold(f64::INFINITY, f64::min))
+            },
         }
     }
 
