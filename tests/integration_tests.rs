@@ -164,3 +164,26 @@ fn test_max_min() {
     assert_eq!(eval_expr("min(1)").unwrap(), 1.0);
     assert_eq!(eval_expr("min(3, 1, 2)").unwrap(), 1.0);
 }
+
+// === TESTS FOR ASSIGNMENTS ===
+#[test]
+fn test_variable_assignment_and_usage() {
+    let mut evaluator = Evaluator::new();
+    let expr1 = "x = 5";
+    let expr2 = "x + 3";
+    evaluator.eval(&Parser::new(Lexer::new(expr1).tokenize().unwrap()).parse().unwrap()).unwrap();
+    let result = evaluator.eval(&Parser::new(Lexer::new(expr2).tokenize().unwrap()).parse().unwrap()).unwrap();
+    assert_eq!(result, 8.0);
+}
+
+#[test]
+fn test_multiple_variable_assignments() {
+    let mut evaluator = Evaluator::new();
+    let expr1 = "a = 10";
+    let expr2 = "b = 20";
+    let expr3 = "a + b";
+    evaluator.eval(&Parser::new(Lexer::new(expr1).tokenize().unwrap()).parse().unwrap()).unwrap();
+    evaluator.eval(&Parser::new(Lexer::new(expr2).tokenize().unwrap()).parse().unwrap()).unwrap();
+    let result = evaluator.eval(&Parser::new(Lexer::new(expr3).tokenize().unwrap()).parse().unwrap()).unwrap();
+    assert_eq!(result, 30.0);
+}

@@ -15,6 +15,7 @@ pub enum Token {
     Identifier(String),
     Exclamation,
     Comma,
+    Equals,
     EOF,
 }
 
@@ -88,6 +89,10 @@ impl Lexer {
                 self.advance();
                 Ok(Token::Comma)
             },
+            Some('=') => {
+                self.advance();
+                Ok(Token::Equals)
+            }
             Some(ch) if ch == '.' || ch.is_digit(10) => self.read_number(),
             Some(ch) if ch.is_alphabetic() => Ok(self.read_identifier()),
             Some(ch) => Err(LexError::UnexpectedCharacter(ch)),

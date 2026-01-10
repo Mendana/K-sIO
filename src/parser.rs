@@ -2,6 +2,7 @@
 /// Uses a grammar to parse input data.
 /// 
 /// The grammar rules are defined as follows:
+/// assignment    → IDENTIFIER EQUALS expression | expression
 /// expression    → term ((PLUS | MINUS) term)*
 /// term          → factor ((STAR | SLASH) factor)*
 /// factor        → power
@@ -25,32 +26,31 @@ impl Parser {
         Parser { tokens, position: 0 }
     }
 
-    fn current_token(&self) -> &Token {
-        &self.tokens[self.position]
-    }
-
-    fn peek_token(&self) -> &Token {
-        &self.tokens.get(self.position + 1).unwrap_or(&Token::EOF)
-    }
-
-    fn advance(&mut self) {
-        if self.position < self.tokens.len() {
-            self.position += 1;
-        }
-    }
-
-    fn expect(&mut self, expected: Token) -> Result<(), ParseError> {
-        if self.current_token() == &expected {
-            self.advance();
-            Ok(())
-        } else {
-            Err(ParseError::UnexpectedToken(format!("{:?}", self.current_token())))
-        }
-    }
-
     /// Main entry point for parsing.
     pub fn parse(&mut self) -> Result<Expr, ParseError> {
-        self.parse_expression()
+        self.parse_assignment()
+    }
+
+    /// Parse an assignment according to the grammar rules
+    fn parse_assignment(&mut self) -> Result<Expr, ParseError> {
+        let expr = self.parse_expression()?;
+
+        if matches!(self.current_token(), Token::Equals) {
+            if let Expr::Variable(name) = expr {
+                self.advance();
+                let value = self.parse_assignment()?;
+                return Ok(Expr::Assignment {
+                    name,
+                    value: Box::new(value),
+                });
+            } else {
+                return Err(ParseError::InvalidExpression(
+                    "Left side of assignment must be a variable".to_string()
+                ));
+            }
+        }
+
+        Ok(expr)
     }
 
     /// Parses an expression according to the grammar rules.
@@ -74,6 +74,29 @@ impl Parser {
         }
 
         Ok(left)
+    }
+
+    fn current_token(&self) -> &Token {
+        &self.tokens[self.position]
+    }
+
+    fn peek_token(&self) -> &Token {
+        &self.tokens.get(self.position + 1).unwrap_or(&Token::EOF)
+    }
+
+    fn advance(&mut self) {
+        if self.position < self.tokens.len() {
+            self.position += 1;
+        }
+    }
+
+    fn expect(&mut self, expected: Token) -> Result<(), ParseError> {
+        if self.current_token() == &expected {
+            self.advance();
+            Ok(())
+        } else {
+            Err(ParseError::UnexpectedToken(format!("{:?}", self.current_token())))
+        }
     }
 
     /// Parses a term according to the grammar rules.
@@ -250,6 +273,23 @@ mod tests {
             assert_eq!(func, Function::Sin);
             assert_eq!(args.len(), 1);
             matches!(args[0], Expr::Number(0.0));
+        }
+    }
+
+    #[test]
+    fn test_assignment() {
+        let expr = parse_expr("x = 5 + 3").unwrap();
+        if let Expr::Assignment { name, value } = expr {
+            assert_eq!(name, "x");
+            if let Expr::BinaryOp { left, op, right } = *value {
+                assert_eq!(op, BinOp::Add);
+                matches!(*left, Expr::Number(5.0));
+                matches!(*right, Expr::Number(3.0));
+            } else {
+                panic!("Expected binary operation in assignment value");    
+            }
+        } else {
+            panic!("Expected assignment expression");
         }
     }
 }

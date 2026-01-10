@@ -21,6 +21,10 @@ pub enum Expr {
         expr: Box<Expr>,
         op: UnOp,
     },
+    Assignment {
+        name: String,
+        value: Box<Expr>,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq)]

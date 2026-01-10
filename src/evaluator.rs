@@ -49,6 +49,12 @@ impl Evaluator {
 
                 let arg_values = arg_values?;
                 Self::eval_function(func, &arg_values)
+            },
+
+            Expr::Assignment { name, value } => {
+                let result = self.eval(value)?;
+                self.context.set(name.clone(), result);
+                Ok(result)
             }
         }
     }
