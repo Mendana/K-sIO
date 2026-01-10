@@ -3,5 +3,20 @@ name = "matheval"
 version = "0.1.0"
 edition = "2024"
 
+[lib]
+name = "matheval"
+path = "src/lib.rs"
+
+[[bin]]
+name = "matheval-cli"
+path = "src/main.rs"
+
 [dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+[target.'cfg(not(target_family = "wasm"))'.dependencies]
 rustyline = "14.0"
+
+[dev-dependencies]
+# Add any development dependencies here
