@@ -101,7 +101,7 @@ fn test_trig_functions() {
 
 #[test]
 fn test_logarithms() {
-    assert!((eval_expr("ln(e)").unwrap() - 1.0).abs() < 1e-10);
+    assert!((eval_expr("ln(E)").unwrap() - 1.0).abs() < 1e-10);
     assert!((eval_expr("log(10)").unwrap() - 1.0).abs() < 1e-10);
 }
 
@@ -186,4 +186,65 @@ fn test_multiple_variable_assignments() {
     evaluator.eval(&Parser::new(Lexer::new(expr2).tokenize().unwrap()).parse().unwrap()).unwrap();
     let result = evaluator.eval(&Parser::new(Lexer::new(expr3).tokenize().unwrap()).parse().unwrap()).unwrap();
     assert_eq!(result, 30.0);
+}
+
+
+/// === TESTS FOR CHANGES IN ANGLE MODES ===
+
+#[test]
+fn test_angle_mode_degrees() {
+    let mut evaluator = Evaluator::new();
+    evaluator.get_context_mut().set_angle_mode(matheval::context::AngleMode::Degrees);
+    let expr = "sin(90)";
+    let result = evaluator.eval(&Parser::new(Lexer::new(expr).tokenize().unwrap()).parse().unwrap()).unwrap();
+    assert!((result - 1.0).abs() < 1e-10);
+}
+
+#[test]
+fn test_angle_mode_radians() {
+    let mut evaluator = Evaluator::new();
+    evaluator.get_context_mut().set_angle_mode(matheval::context::AngleMode::Radians);
+    let expr = "sin(PI / 2)";
+    let result = evaluator.eval(&Parser::new(Lexer::new(expr).tokenize().unwrap()).parse().unwrap()).unwrap();
+    assert!((result - 1.0).abs() < 1e-10);
+}
+
+#[test]
+fn test_angle_mode_gradians() {
+    let mut evaluator = Evaluator::new();
+    evaluator.get_context_mut().set_angle_mode(matheval::context::AngleMode::Gradians);
+    let expr = "sin(100)";
+    let result = evaluator.eval(&Parser::new(Lexer::new(expr).tokenize().unwrap()).parse().unwrap()).unwrap();
+    assert!((result - 1.0).abs() < 1e-10);
+}
+
+#[test]
+fn test_angle_mode_in_acos() {
+    let mut evaluator = Evaluator::new();
+    evaluator.get_context_mut().set_angle_mode(matheval::context::AngleMode::Degrees);
+    let expr = "acos(0)";
+    let result = evaluator.eval(&Parser::new(Lexer::new(expr).tokenize().unwrap()).parse().unwrap()).unwrap();
+    assert!((result - 90.0).abs() < 1e-10);
+}
+
+#[test]
+fn test_angle_mode_in_atan() {
+    let mut evaluator = Evaluator::new();
+    evaluator.get_context_mut().set_angle_mode(matheval::context::AngleMode::Radians);
+    let expr = "atan(1)";
+    let result = evaluator.eval(&Parser::new(Lexer::new(expr).tokenize().unwrap()).parse().unwrap()).unwrap();
+    assert!((result - (std::f64::consts::PI / 4.0)).abs() < 1e-10);
+}
+
+#[test]
+fn test_angle_mode_switching() {
+    let mut evaluator = Evaluator::new();
+    evaluator.get_context_mut().set_angle_mode(matheval::context::AngleMode::Degrees);
+    let expr_deg = "sin(30)";
+    let result_deg = evaluator.eval(&Parser::new(Lexer::new(expr_deg).tokenize().unwrap()).parse().unwrap()).unwrap();
+    assert!((result_deg - 0.5).abs() < 1e-10);
+    evaluator.get_context_mut().set_angle_mode(matheval::context::AngleMode::Radians);
+    let expr_rad = "sin(PI / 6)";
+    let result_rad = evaluator.eval(&Parser::new(Lexer::new(expr_rad).tokenize().unwrap()).parse().unwrap()).unwrap();
+    assert!((result_rad - 0.5).abs() < 1e-10);
 }

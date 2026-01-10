@@ -1,4 +1,4 @@
-use matheval::{evaluator::Evaluator, lexer::{Lexer}, parser::Parser};
+use matheval::{context::AngleMode, evaluator::Evaluator, lexer::Lexer, parser::Parser};
 use std::{io::{self, Write}}; 
 
 fn main() {
@@ -22,6 +22,10 @@ fn main() {
             "exit" | "quit" => break,
             "help" => print_help(),
             "vars" => list_vars(&evaluator),
+            "deg" => set_angle_mode(&mut evaluator, AngleMode::Degrees),
+            "rad" => set_angle_mode(&mut evaluator, AngleMode::Radians),
+            "grad" => set_angle_mode(&mut evaluator, AngleMode::Gradians),
+            "mode" => show_mode(&evaluator),
             "" => continue,
             _ => process_input(trimmed, &mut evaluator),
         }
@@ -72,6 +76,25 @@ fn list_vars(evaluator: &Evaluator) {
     }
 }
 
+fn set_angle_mode(evaluator: &mut Evaluator, mode: AngleMode) {
+    evaluator.get_context_mut().set_angle_mode(mode);
+    let mode_str = match mode {
+        AngleMode::Degrees => "Degrees",
+        AngleMode::Radians => "Radians",
+        AngleMode::Gradians => "Gradians",
+    };
+    println!("Angle mode set to: {}", mode_str);
+}
+
+fn show_mode(evaluator: &Evaluator) {
+    let mode_str = match evaluator.get_context().get_angle_mode() {
+        AngleMode::Degrees => "Degrees (DEG)",
+        AngleMode::Radians => "Radians (RAD)",
+        AngleMode::Gradians => "Gradians (GRAD)",
+    };
+    println!("Current angle mode: {}", mode_str);
+}
+
 fn print_help() {
     println!("Available functions:");
     println!("  Trigonometric: sin(x), cos(x), tan(x), asin(x), acos(x), atan(x)");
@@ -83,6 +106,10 @@ fn print_help() {
     println!("\nConstants: PI, E");
     println!("Operators: +, -, *, /, ^");
     println!("\nCommands:");
+    println!("  deg   - Set angle mode to degrees (default)");
+    println!("  rad   - Set angle mode to radians");
+    println!("  grad  - Set angle mode to gradians");
+    println!("  mode  - Show current angle mode");
     println!("  vars  - List all defined variables");
     println!("  help  - Show this help");
     println!("  exit  - Exit the REPL");

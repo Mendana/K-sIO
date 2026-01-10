@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 pub struct Context {
     variables: HashMap<String, f64>,
+    angle_mode: AngleMode,
 }
 
 impl Context {
@@ -11,7 +12,10 @@ impl Context {
         variables.insert("PI".to_string(), std::f64::consts::PI);
         variables.insert("E".to_string(), std::f64::consts::E);
 
-        Context { variables }
+        Context { 
+            variables,
+            angle_mode: AngleMode::Degrees
+        }
     }
 
     pub fn get(&self, name: &str) -> Option<f64>{
@@ -29,4 +33,19 @@ impl Context {
     pub fn get_variables(&self) -> &HashMap<String, f64> {
         &self.variables
     }
+
+    pub fn get_angle_mode(&self) -> AngleMode {
+        self.angle_mode
+    }
+
+    pub fn set_angle_mode(&mut self, mode: AngleMode) {
+        self.angle_mode = mode;
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum AngleMode {
+    Degrees,
+    Radians,
+    Gradians
 }

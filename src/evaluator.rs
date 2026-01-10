@@ -17,6 +17,10 @@ impl Evaluator {
         &self.context
     }
 
+    pub fn get_context_mut(&mut self) -> &mut Context {
+        &mut self.context
+    }
+
     pub fn evaluate(&mut self, expr: &Expr) -> Result<f64, EvalError> {
         let result = self.eval(expr)?;
         self.context.set_ans(result);
@@ -52,7 +56,7 @@ impl Evaluator {
                 let arg_values: Result<Vec<f64>, _> = args.iter().map(|arg| self.eval(arg)).collect();
 
                 let arg_values = arg_values?;
-                Self::eval_function(func, &arg_values)
+                self.eval_function(func, &arg_values)
             },
 
             Expr::Assignment { name, value } => {
@@ -87,38 +91,74 @@ impl Evaluator {
         }
     }
 
-    fn eval_function(func: &Function, args: &[f64]) -> Result<f64, EvalError> {
+    fn eval_function(&self, func: &Function, args: &[f64]) -> Result<f64, EvalError> {
         match func {
             Function::Sin => {
                 Self::validate_args(args, 1, "sin")?;
-                Ok(args[0].to_radians().sin())
+                let radians = functions::to_radians(
+                    args[0],
+                    self.get_context().get_angle_mode()
+                );
+                Ok(radians.sin())
             },
             Function::Cos => {
                 Self::validate_args(args, 1, "cos")?;
-                Ok(args[0].to_radians().cos())
+                let radians = functions::to_radians(
+                    args[0],
+                    self.get_context().get_angle_mode()
+                );
+                Ok(radians.cos())
             },
             Function::Tan => {
                 Self::validate_args(args, 1, "tan")?;
-                Ok(args[0].to_radians().tan())
+                let radians = functions::to_radians(
+                    args[0],
+                    self.get_context().get_angle_mode()
+                );
+                Ok(radians.tan())
             },
             Function::Asin => {
                 Self::validate_args(args, 1, "asin")?;
-                Ok(args[0].asin().to_degrees())
+                if args[0] < -1.0 || args[0] > 1.0 {
+                    return Err(EvalError::MathError("asin domain error: input must be in [-1, 1]".to_string()));
+                }
+                let radians = args[0].asin();
+                Ok(functions::from_radians(
+                    radians,
+                    self.get_context().get_angle_mode()
+                ))
             },
             Function::Acos => {
                 Self::validate_args(args, 1, "acos")?;
-                Ok(args[0].acos().to_degrees())
+                if args[0] < -1.0 || args[0] > 1.0 {
+                    return Err(EvalError::MathError("acos domain error: input must be in [-1, 1]".to_string()));
+                }
+                let radians = args[0].acos();
+                Ok(functions::from_radians(
+                    radians,
+                    self.get_context().get_angle_mode()
+                ))
             },
             Function::Atan => {
                 Self::validate_args(args, 1, "atan")?;
-                Ok(args[0].atan().to_degrees())
+                let radians = args[0].atan();
+                Ok(functions::from_radians(
+                    radians,
+                    self.get_context().get_angle_mode()
+                ))
             },
             Function::Ln => {
                 Self::validate_args(args, 1, "ln")?;
+                if args[0] <= 0.0 {
+                    return Err(EvalError::MathError("ln of non-positive number".to_string()));
+                }
                 Ok(args[0].ln())
             },
             Function::Log => {
                 Self::validate_args(args, 1, "log")?;
+                if args[0] <= 0.0 {
+                    return Err(EvalError::MathError("log of non-positive number".to_string()));
+                }
                 Ok(args[0].log10())
             },
             Function::Sqrt => {
