@@ -8,8 +8,8 @@ impl Context {
     pub fn new() -> Self {
         let mut variables = HashMap::new();
 
-        variables.insert("pi".to_string(), std::f64::consts::PI);
-        variables.insert("e".to_string(), std::f64::consts::E);
+        variables.insert("PI".to_string(), std::f64::consts::PI);
+        variables.insert("E".to_string(), std::f64::consts::E);
 
         Context { variables }
     }

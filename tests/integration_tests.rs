@@ -45,8 +45,8 @@ fn test_factorial() {
 
 #[test]
 fn test_constants() {
-    assert!((eval_expr("pi").unwrap() - std::f64::consts::PI).abs() < 1e-10);
-    assert!((eval_expr("e").unwrap() - std::f64::consts::E).abs() < 1e-10);
+    assert!((eval_expr("PI").unwrap() - std::f64::consts::PI).abs() < 1e-10);
+    assert!((eval_expr("E").unwrap() - std::f64::consts::E).abs() < 1e-10);
 }
 
 #[test]
@@ -58,7 +58,7 @@ fn test_division_by_zero() {
 fn test_complex_expressions() {
     assert_eq!(eval_expr("2 + 3 * 4 - 5 / 2").unwrap(), 11.5);
     assert_eq!(eval_expr("((2 + 3) * 4) - (10 / 2)").unwrap(), 15.0);
-    assert!((eval_expr("2 * pi").unwrap() - (2.0 * std::f64::consts::PI)).abs() < 1e-10);
+    assert!((eval_expr("2 * PI").unwrap() - (2.0 * std::f64::consts::PI)).abs() < 1e-10);
 }
 
 #[test]

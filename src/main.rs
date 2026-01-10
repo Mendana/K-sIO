@@ -64,6 +64,9 @@ fn list_vars(evaluator: &Evaluator) {
     }
 
     println!("Defined variables:");
+    let mut vars: Vec<_> = vars.iter().collect();
+    vars.sort_by(|a, b| a.0.cmp(b.0));
+    
     for (name, value) in vars {
         println!("  {} = {}", name, value);
     }
@@ -71,13 +74,16 @@ fn list_vars(evaluator: &Evaluator) {
 
 fn print_help() {
     println!("Available functions:");
-    println!("  sin(x), cos(x), tan(x), asin(x), acos(x), atan(x) - Trigonometric functions");
-    println!("  sqrt(x), abs(x), exp(x), pow(x, y), max(x, y), min(x, y), ceil(x), floor(x), round(x) - Common mathematical functions");
-    println!("  ln(x), log(x) - Natural and base-10 logarithm");
-    println!("  x! - Factorial");
-    println!("\nConstants: pi, e");
+    println!("  Trigonometric: sin(x), cos(x), tan(x), asin(x), acos(x), atan(x)");
+    println!("  Logarithmic: ln(x), log(x)");
+    println!("  Power & roots: sqrt(x), exp(x), pow(x,y)");
+    println!("  Rounding: floor(x), ceil(x), round(x)");
+    println!("  Other: abs(x), max(...), min(...)");
+    println!("  Factorial: x!");
+    println!("\nConstants: PI, E");
     println!("Operators: +, -, *, /, ^");
-    println!("You can assign variables using the '=' operator, e.g., x = 5");
-    println!("Type 'vars' to see all defined variables.");
-    println!("Type 'exit' or 'quit' to leave the REPL.\n");
+    println!("\nCommands:");
+    println!("  vars  - List all defined variables");
+    println!("  help  - Show this help");
+    println!("  exit  - Exit the REPL");
 }
