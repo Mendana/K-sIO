@@ -1,45 +1,81 @@
-.calculator {
-  max-width: 600px;
-  margin: 50px auto;
-  padding: 20px;
-  text-align: center;
+:root {
+  --background: oklch(0.13 0.01 240);
+  --foreground: oklch(0.95 0 0);
+
+  --card: oklch(0.16 0.01 240);
+  --card-foreground: oklch(0.95 0 0);
+  --popover: oklch(0.16 0.01 240);
+  --popover-foreground: oklch(0.95 0 0);
+  
+  --primary: oklch(0.7 0.15 175);
+  --primary-foreground: oklch(0.13 0.01 240);
+  
+  --secondary: oklch(0.22 0.01 240);
+  --secondary-foreground: oklch(0.85 0 0);
+  
+  --muted: oklch(0.22 0.01 240);
+  --muted-foreground: oklch(0.6 0 0);
+  
+  --accent: oklch(0.7 0.15 175);
+  --accent-foreground: oklch(0.13 0.01 240);
+  
+  --destructive: oklch(0.6 0.2 25);
+  --destructive-foreground: oklch(0.95 0 0);
+  
+  --border: oklch(0.28 0.01 240);
+  --input: oklch(0.22 0.01 240);
+  --ring: oklch(0.7 0.15 175);
+  
+  --calc-number: oklch(0.2 0.01 240);
+  --calc-number-hover: oklch(0.25 .01 240);
+  --calc-operator: oklch(0.35 0.02 240);
+  --calc-operator-hover: oklch(0.4 0.02 240);
+  --calc-function: oklch(0.25 0.02 200);
+  --calc-function-hover: oklch(0.3 0.02 200);
+  --calc-equal: oklch(0.7 0.15 175);
+  --calc-equal-hover: oklch(0.75 0.15 175);
+
+  --chart-1: oklch(0.7 0.15 175);
+  --chart-2: oklch(0.65 0.2 280);
+  --chart-3: oklch(0.7 0.2 50);
+  --chart-4: oklch(0.65 0.2 340);
+  --chart-5: oklch(0.7 0.15 140);
+
+  --mode-basic: #6b7280;     
+  --mode-scientific: #8b5cf6;
+  --mode-graphing: #2dd4bf;  
+  --mode-matrix: #f59e0b;    
+  --mode-equations: #3b82f6; 
+  --mode-stats: #22c55e;     
+  --mode-programmer: #ef4444;
+  --mode-finance: #eab308;   
 }
 
-.display {
-  margin: 20px 0;
+/* Estilos personalizados para la visualización matemática */
+.expression-display {
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  font-weight: 300;
+  /* Aquí se aplicará el renderizado matemático con KaTeX o MathJax */
 }
 
-input {
-  width: 100%;
-  padding: 15px;
-  font-size: 18px;
-  margin-bottom: 10px;
-  border: 2px solid #ccc;
-  border-radius: 5px;
+/* Scrollbar personalizada */
+.scrollbar-thin {
+  scrollbar-width: thin;
 }
 
-.result {
-  padding: 15px;
-  font-size: 24px;
-  min-height: 50px;
-  background: #f0f0f0;
-  border-radius: 5px;
+.scrollbar-thin::-webkit-scrollbar {
+  height: 6px;
 }
 
-.error {
-  color: red;
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: var(--secondary);
 }
 
-button {
-  padding: 15px 30px;
-  font-size: 18px;
-  background: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
 }
 
-button:hover {
-  background: #0056b3;
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-foreground);
 }
