@@ -21,6 +21,7 @@ fn main() {
         match trimmed {
             "exit" | "quit" => break,
             "help" => print_help(),
+            "vars" => list_vars(&evaluator),
             "" => continue,
             _ => process_input(trimmed, &mut evaluator),
         }
@@ -54,12 +55,29 @@ fn process_input(input: &str, evaluator: &mut Evaluator) {
     }
 }
 
+fn list_vars(evaluator: &Evaluator) {
+    let vars = evaluator.get_context().get_variables();
+
+    if vars.is_empty() {
+        println!("No variables defined.");
+        return;
+    }
+
+    println!("Defined variables:");
+    for (name, value) in vars {
+        println!("  {} = {}", name, value);
+    }
+}
+
 fn print_help() {
     println!("Available functions:");
-    println!("  sin(x), cos(x), tan(x) - Trigonometric (degrees)");
-    println!("  sqrt(x), abs(x), exp(x)");
+    println!("  sin(x), cos(x), tan(x), asin(x), acos(x), atan(x) - Trigonometric functions");
+    println!("  sqrt(x), abs(x), exp(x), pow(x, y), max(x, y), min(x, y), ceil(x), floor(x), round(x) - Common mathematical functions");
     println!("  ln(x), log(x) - Natural and base-10 logarithm");
     println!("  x! - Factorial");
     println!("\nConstants: pi, e");
     println!("Operators: +, -, *, /, ^");
+    println!("You can assign variables using the '=' operator, e.g., x = 5");
+    println!("Type 'vars' to see all defined variables.");
+    println!("Type 'exit' or 'quit' to leave the REPL.\n");
 }

@@ -13,6 +13,10 @@ impl Evaluator {
         }
     }
 
+    pub fn get_context(&self) -> &Context {
+        &self.context
+    }
+
     pub fn evaluate(&mut self, expr: &Expr) -> Result<f64, EvalError> {
         let result = self.eval(expr)?;
         self.context.set_ans(result);

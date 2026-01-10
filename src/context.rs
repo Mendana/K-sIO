@@ -25,4 +25,8 @@ impl Context {
     pub fn set(&mut self, name: String, value: f64) {
         self.variables.insert(name, value);
     }
+
+    pub fn get_variables(&self) -> &HashMap<String, f64> {
+        &self.variables
+    }
 }
