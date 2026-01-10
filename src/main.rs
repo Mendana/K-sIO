@@ -1,36 +1,77 @@
-use matheval::{context::AngleMode, error::{LexError, ParseError}, evaluator::Evaluator, lexer::Lexer, parser::Parser};
-use std::{io::{self, Write}}; 
+use matheval::{
+    context::AngleMode,
+    error::{LexError, ParseError},
+    evaluator::Evaluator,
+    lexer::Lexer,
+    parser::Parser,
+    repl::CalcHelper,
+};
+use rustyline::error::ReadlineError;
+use rustyline::Editor;
 
 fn main() {
     println!("=== Calculus Engine REPL ===");
     println!("Type 'exit' or 'quit' to leave the REPL.");
     println!("Type 'help' for available functions\n");
+    println!("Use ↑/↓ to navigate through history.\n");
+    println!("Use tab for autocompletion.\n");
 
     let mut evaluator = Evaluator::new();
-    let mut input = String::new();
+
+    let mut helper = CalcHelper::new();
+    helper.update_variables(evaluator.get_context().get_variables().keys().cloned().collect());
+    let mut rl = Editor::new().expect("Failed to create REPL editor");
+    rl.set_helper(Some(helper));
+
+    let history_file = "calc_repl_history.txt";
+    let _ = rl.load_history(history_file);
+
 
     loop {
-        print!("> ");
-        io::stdout().flush().unwrap();
+        let readline = rl.readline("> ");
+        
+        match readline {
+            Ok(line) => {
+                let trimmed = line.trim();
 
-        input.clear();
-        io::stdin().read_line(&mut input).expect("Failed to read input");
+                if trimmed.is_empty() {
+                    continue;
+                }
 
-        let trimmed = input.trim();
-
-        match trimmed {
-            "exit" | "quit" => break,
-            "help" => print_help(),
-            "vars" => list_vars(&evaluator),
-            "deg" => set_angle_mode(&mut evaluator, AngleMode::Degrees),
-            "rad" => set_angle_mode(&mut evaluator, AngleMode::Radians),
-            "grad" => set_angle_mode(&mut evaluator, AngleMode::Gradians),
-            "mode" => show_mode(&evaluator),
-            "" => continue,
-            _ => process_input(trimmed, &mut evaluator),
+                let _ = rl.add_history_entry(trimmed);
+                
+                match trimmed {
+                    "exit" | "quit" => break,
+                    "help" => print_help(),
+                    "vars" => list_vars(&evaluator),
+                    "deg" => set_angle_mode(&mut evaluator, AngleMode::Degrees),
+                    "rad" => set_angle_mode(&mut evaluator, AngleMode::Radians),
+                    "grad" => set_angle_mode(&mut evaluator, AngleMode::Gradians),
+                    "mode" => show_mode(&evaluator),
+                    "" => continue,
+                    _ => {
+                        process_input(trimmed, &mut evaluator);
+                        if let Some(h) = rl.helper_mut() {
+                            h.update_variables(evaluator.get_context().get_variables().keys().cloned().collect());
+                        }
+                    },
+                }
+            },
+            Err(ReadlineError::Interrupted) => {
+                println!("Use 'exit' or 'quit' to leave the REPL.");
+                continue;
+            },
+            Err(ReadlineError::Eof) => {
+                break;
+            },
+            Err(err) => {
+                eprintln!("Error reading line: {}", err);
+                break;
+            }
         }
     }
 
+    let _ = rl.save_history(history_file);
     println!("Goodbye");
 }
 
@@ -44,7 +85,7 @@ fn process_input(input: &str, evaluator: &mut Evaluator) {
                 show_error_context(input, pos);
             }
             return;
-        },
+        }
     };
 
     let mut parser = Parser::new(tokens);
@@ -54,7 +95,7 @@ fn process_input(input: &str, evaluator: &mut Evaluator) {
             eprintln!("Parsing error: {}", e);
             show_error_context(input, get_parse_error_position(&e));
             return;
-        },
+        }
     };
 
     match evaluator.evaluate(&ast) {
@@ -94,7 +135,7 @@ fn list_vars(evaluator: &Evaluator) {
     println!("Defined variables:");
     let mut vars: Vec<_> = vars.iter().collect();
     vars.sort_by(|a, b| a.0.cmp(b.0));
-    
+
     for (name, value) in vars {
         println!("  {} = {}", name, value);
     }
