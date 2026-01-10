@@ -1,4 +1,4 @@
-use matheval::{context::AngleMode, evaluator::Evaluator, lexer::Lexer, parser::Parser};
+use matheval::{context::AngleMode, error::{LexError, ParseError}, evaluator::Evaluator, lexer::Lexer, parser::Parser};
 use std::{io::{self, Write}}; 
 
 fn main() {
@@ -40,6 +40,9 @@ fn process_input(input: &str, evaluator: &mut Evaluator) {
         Ok(toks) => toks,
         Err(e) => {
             eprintln!("Lexing error: {}", e);
+            if let Some(pos) = get_lexer_error_position(&e) {
+                show_error_context(input, pos);
+            }
             return;
         },
     };
@@ -49,6 +52,7 @@ fn process_input(input: &str, evaluator: &mut Evaluator) {
         Ok(ast) => ast,
         Err(e) => {
             eprintln!("Parsing error: {}", e);
+            show_error_context(input, get_parse_error_position(&e));
             return;
         },
     };
@@ -57,6 +61,26 @@ fn process_input(input: &str, evaluator: &mut Evaluator) {
         Ok(result) => println!("= {}", result),
         Err(e) => eprintln!("Evaluation error: {}", e),
     }
+}
+
+fn get_parse_error_position(error: &ParseError) -> usize {
+    match error {
+        ParseError::UnexpectedToken { position, .. } => *position,
+        ParseError::InvalidExpression { position, .. } => *position,
+        ParseError::UnexpectedEOF { position } => *position,
+    }
+}
+
+fn get_lexer_error_position(error: &LexError) -> Option<usize> {
+    match error {
+        LexError::InvalidNumber(_) => None,
+        LexError::UnexpectedCharacter(_, pos) => Some(*pos),
+    }
+}
+
+fn show_error_context(input: &str, position: usize) {
+    eprintln!("{}", input);
+    eprintln!("{}^", " ".repeat(position));
 }
 
 fn list_vars(evaluator: &Evaluator) {

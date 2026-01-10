@@ -5,3 +5,4 @@ pub mod context;
 pub mod evaluator;
 pub mod error;
 pub mod functions;
+pub mod repl;

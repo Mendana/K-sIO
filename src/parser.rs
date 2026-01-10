@@ -14,15 +14,15 @@
 /// arguments     → expression (COMMA expression)*
 
 
-use crate::{ast::{BinOp, Expr, Function, UnOp}, error::ParseError, lexer::Token};
+use crate::{ast::{BinOp, Expr, Function, UnOp}, error::ParseError, lexer::{Token, TokenWithPos}};
 
 pub struct Parser {
-    tokens: Vec<Token>,
+    tokens: Vec<TokenWithPos>,
     position: usize,
 }
 
 impl Parser {
-    pub fn new(tokens: Vec<Token>) -> Self {
+    pub fn new(tokens: Vec<TokenWithPos>) -> Self {
         Parser { tokens, position: 0 }
     }
 
@@ -44,9 +44,10 @@ impl Parser {
                     value: Box::new(value),
                 });
             } else {
-                return Err(ParseError::InvalidExpression(
-                    "Left side of assignment must be a variable".to_string()
-                ));
+                return Err(ParseError::InvalidExpression {
+                    message: "Left side of assignment must be a variable".to_string(),
+                    position: self.current_token_pos(),
+                });
             }
         }
 
@@ -174,7 +175,11 @@ impl Parser {
                 self.expect(Token::RParen)?;
                 Ok(expr)
             }
-            _ => Err(ParseError::UnexpectedToken(format!("{:?}", self.current_token()))),
+            _ => Err(ParseError::UnexpectedToken {
+                expected: "NUMBER, IDENTIFIER, or LPAREN".to_string(),
+                found: format!("{:?}", self.current_token()),
+                position: self.current_token_pos(),
+            }),
         }
     }
 
@@ -197,20 +202,38 @@ impl Parser {
             }
             self.expect(Token::RParen)?;
             Ok(Expr::FunctionCall {
-                func: Function::from_str(&func_name).ok_or_else(|| ParseError::InvalidExpression(func_name.clone()))?,
+                func: Function::from_str(&func_name)
+                    .ok_or_else(|| ParseError::InvalidExpression { message: format!("Unknown function: {}", func_name), position: self.current_token_pos() })?,
                 args,
             })
         } else {
-            Err(ParseError::UnexpectedToken(format!("{:?}", self.current_token())))
+            Err(ParseError::UnexpectedToken { 
+                expected: "Function name".to_string(),
+                 found: format!("{:?}", self.current_token()),
+                  position: self.current_token_pos()
+                })
         }
     }    
 
     fn current_token(&self) -> &Token {
-        &self.tokens[self.position]
+        self.tokens
+            .get(self.position)
+            .map(|twp| &twp.token)
+            .unwrap_or(&Token::EOF)
+    }
+
+    fn current_token_pos(&self) -> usize {
+        self.tokens
+            .get(self.position)
+            .map(|twp| twp.position)
+            .unwrap_or(0)
     }
 
     fn peek_token(&self) -> &Token {
-        &self.tokens.get(self.position + 1).unwrap_or(&Token::EOF)
+        &self.tokens
+            .get(self.position + 1)
+            .map(|twp| &twp.token)
+            .unwrap_or(&Token::EOF)
     }
 
     fn advance(&mut self) {
@@ -224,7 +247,11 @@ impl Parser {
             self.advance();
             Ok(())
         } else {
-            Err(ParseError::UnexpectedToken(format!("{:?}", self.current_token())))
+            Err(ParseError::UnexpectedToken{
+                expected: format!("{:?}", expected),
+                found: format!("{:?}", self.current_token()),
+                position: self.current_token_pos(),
+            })
         }
     }
 }
@@ -236,15 +263,7 @@ mod tests {
 
     fn parse_expr(input: &str) -> Result<Expr, ParseError> {
         let mut lexer = Lexer::new(input);
-        let mut tokens = Vec::new();
-        loop {
-            let token = lexer.next_token().unwrap();
-            if token == Token::EOF {
-                tokens.push(token);
-                break;
-            }
-            tokens.push(token);
-        }
+        let tokens = lexer.tokenize().unwrap();
         let mut parser = Parser::new(tokens);
         parser.parse()
     }
@@ -273,6 +292,8 @@ mod tests {
             assert_eq!(func, Function::Sin);
             assert_eq!(args.len(), 1);
             matches!(args[0], Expr::Number(0.0));
+        } else {
+            panic!("Expected function call expression");
         }
     }
 

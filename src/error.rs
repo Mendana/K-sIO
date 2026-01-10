@@ -1,18 +1,18 @@
-use std::{error::Error, fmt};
+use std::{error::Error, fmt, usize};
 
 /// Error types for the application.
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum LexError {
-    UnexpectedCharacter(char),
+    UnexpectedCharacter(char, usize),
     InvalidNumber(String),
 }
 
 impl fmt::Display for LexError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            LexError::UnexpectedCharacter(ch) => {
-                write!(f, "Unexpected character encountered: '{}'", ch)
+            LexError::UnexpectedCharacter(ch, usize) => {
+                write!(f, "Unexpected character encountered: '{}' at position {}", ch, usize)
             },
             LexError::InvalidNumber(num_str) => {
                 write!(f, "Invalid number format: '{}'", num_str)
@@ -26,22 +26,32 @@ impl Error for LexError {}
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum ParseError {
-    UnexpectedToken(String),
-    UnexpectedEOF,
-    InvalidExpression(String),
+    UnexpectedToken {
+        expected: String,
+        found: String,
+        position: usize,
+    },
+    UnexpectedEOF {
+        position: usize,
+    },
+    InvalidExpression {
+        message: String,
+        position: usize,
+    }
 }
 
 impl fmt::Display for ParseError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            ParseError::UnexpectedToken(tok) => {
-                write!(f, "Unexpected token encountered: '{}'", tok)
+            ParseError::UnexpectedToken { expected, found, position } => {
+                write!(f, "Unexpected token at position {}: expected {}, found {}", 
+                    position, expected, found)
             },
-            ParseError::UnexpectedEOF => {
-                write!(f, "Unexpected end of input")
+            ParseError::UnexpectedEOF { position } => {
+                write!(f, "Unexpected end of input at position {}", position)
             },
-            ParseError::InvalidExpression(expr) => {
-                write!(f, "Invalid expression: '{}'", expr)
+            ParseError::InvalidExpression { message, position } => {
+                write!(f, "Invalid expression at position {}: {}", position, message)
             },
         }
     }
