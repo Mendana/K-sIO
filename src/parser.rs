@@ -76,29 +76,6 @@ impl Parser {
         Ok(left)
     }
 
-    fn current_token(&self) -> &Token {
-        &self.tokens[self.position]
-    }
-
-    fn peek_token(&self) -> &Token {
-        &self.tokens.get(self.position + 1).unwrap_or(&Token::EOF)
-    }
-
-    fn advance(&mut self) {
-        if self.position < self.tokens.len() {
-            self.position += 1;
-        }
-    }
-
-    fn expect(&mut self, expected: Token) -> Result<(), ParseError> {
-        if self.current_token() == &expected {
-            self.advance();
-            Ok(())
-        } else {
-            Err(ParseError::UnexpectedToken(format!("{:?}", self.current_token())))
-        }
-    }
-
     /// Parses a term according to the grammar rules.
     fn parse_term(&mut self) -> Result<Expr, ParseError> {
         let mut left = self.parse_factor()?;
@@ -227,6 +204,29 @@ impl Parser {
             Err(ParseError::UnexpectedToken(format!("{:?}", self.current_token())))
         }
     }    
+
+    fn current_token(&self) -> &Token {
+        &self.tokens[self.position]
+    }
+
+    fn peek_token(&self) -> &Token {
+        &self.tokens.get(self.position + 1).unwrap_or(&Token::EOF)
+    }
+
+    fn advance(&mut self) {
+        if self.position < self.tokens.len() {
+            self.position += 1;
+        }
+    }
+
+    fn expect(&mut self, expected: Token) -> Result<(), ParseError> {
+        if self.current_token() == &expected {
+            self.advance();
+            Ok(())
+        } else {
+            Err(ParseError::UnexpectedToken(format!("{:?}", self.current_token())))
+        }
+    }
 }
 
 #[cfg(test)]
