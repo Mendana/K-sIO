@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import './App.css';
-import BasicMode from './components/basicMode';
+import BasicMode from './components/BasicMode';
+import MathDisplay from './components/MathDisplay';
 
 type CalculatorMode = 'basic' | 'scientific' | 'graphs' | 'matrices' | 'equations' | 'programming';
 
@@ -21,10 +22,10 @@ function App() {
     <div className="w-full mx-auto h-screen flex flex-col bg-(--background) text-(--foreground)">
       {/* Zona de visualización de expresión */}
       <div className="bg-(--card) border-b-2 border-(--border) p-4 sm:p-6 md:p-8 min-h-25 md:min-h-30 flex items-center justify-end">
-        <div className="expression-display w-full text-right break-all">
-          {/* Aquí irá el renderizado con formato matemático */}
-          {expression || '0'}
-        </div>
+        <MathDisplay
+          expression={expression}
+          className="expression-display w-full text-right"
+        />
       </div>
 
       {/* Barra de navegación de modos */}
@@ -48,7 +49,7 @@ function App() {
       <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8">
         {mode === 'basic' && (
           <div className="w-full h-full flex flex-col items-center justify-center text-lg sm:text-xl text-(--muted-foreground)">
-            <BasicMode />
+            <BasicMode expression={expression} setExpression={setExpression} />
           </div>
         )}
 

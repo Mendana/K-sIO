@@ -1,6 +1,12 @@
 type ButtonType = 'number' | 'operator' | 'equal' | 'clear';
 
-function CalcBtn({ symbol, type }: { symbol: string; type: ButtonType }) {
+interface CalcBtnProps {
+    symbol: string;
+    type: ButtonType;
+    onClick: (symbol: string, type: string) => void;
+}
+
+function CalcBtn({ symbol, type, onClick }: CalcBtnProps) {
     const getButtonStyles = () => {
         switch (type) {
             case 'number':
@@ -18,6 +24,7 @@ function CalcBtn({ symbol, type }: { symbol: string; type: ButtonType }) {
 
     return (
         <button
+            onClick={() => onClick(symbol, type)}
             className={`
                 w-full h-full
                 rounded-lg sm:rounded-xl md:rounded-2xl

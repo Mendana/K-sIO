@@ -2,7 +2,7 @@ import { invoke } from '@tauri-apps/api/core';
 
 export interface EvalResult {
     success: boolean;
-    result?: string;
+    result?: number;
     error?: string;
 }
 
